@@ -1,0 +1,104 @@
+#include<iostream>
+#include<conio.h>
+#include<fstream>
+#include<string>
+using namespace std;
+
+void main()
+{
+    int P[20], AT[20], BT[20], FT[20], TAT[20], WT[20], n, temp;
+    float av_tat = 0.0, av_wt = 0.0;
+
+    ifstream infile("data.txt");
+    if (!infile) {
+        cout << "File not found!" << endl;
+        return;
+    }
+
+    n = 0; 
+    while (infile >> P[n] >> AT[n] >> BT[n]) {
+        n++; 
+    }
+    infile.close(); 
+
+ 
+
+    cout << "\nTABLE:";
+    cout << "\nProcesses\tArrival Time\tBurst Time\n";
+    for (int i = 0; i < n; i++) {
+        cout << " " << P[i] << "\t\t" << " " << AT[i] << "\t\t" << " " << BT[i] << "\n";
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < (n - i - 1); j++) {
+            if (AT[j] > AT[j + 1]) {
+          
+                temp = P[j];
+                P[j] = P[j + 1];
+                P[j + 1] = temp;
+
+                temp = AT[j];
+                AT[j] = AT[j + 1];
+                AT[j + 1] = temp;
+
+                temp = BT[j];
+                BT[j] = BT[j + 1];
+                BT[j + 1] = temp;
+            }
+        }
+    }
+
+
+    FT[0] = AT[0] + BT[0];
+    for (int i = 1; i < n; i++) {
+        FT[i] = FT[i - 1] + BT[i];
+    }
+
+
+    for (int i = 0; i < n; i++) {
+        TAT[i] = FT[i] - AT[i];
+        WT[i] = TAT[i] - BT[i];
+        av_tat += TAT[i];
+        av_wt += WT[i];
+    }
+
+
+    av_tat /= n;
+    av_wt /= n;
+
+
+    cout << "\nProcesses\tArrival Time\tBurst Time\tFinish Time\tTurn Around Time\tWaiting Time\n";
+    for (int i = 0; i < n; i++) {
+        cout << " " << P[i] << "\t\t" << AT[i] << "\t\t" << BT[i] << "\t\t" << FT[i] << "\t\t" << TAT[i] << "\t\t\t" << WT[i] << "\n";
+    }
+
+  
+    cout << "\nThe average Turn Around Time is: " << av_tat << " Time units";
+    cout << "\nThe average Waiting Time is: " << av_wt << " Time units";
+
+    cout << "\nGantt Chart:";
+    cout << "\n.";
+    for (int i = 0; i < n; i++) {
+        for (int j = BT[i]; j > 0; j--) {
+            cout << "-";
+        }
+        cout << ".";
+    }
+    cout << "\n|";
+    for (int i = 0; i < n; i++) {
+        cout << "P" << P[i];
+        for (int j = (BT[i] - 2); j > 0; j--) {
+            cout << " ";
+        }
+        cout << "|";
+    }
+    cout << "\n.";
+    for (int i = 0; i < n; i++) {
+        for (int j = BT[i]; j > 0; j--) {
+            cout << "-";
+        }
+        cout << ".";
+    }
+
+    _getch();
+}
